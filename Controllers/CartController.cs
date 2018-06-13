@@ -30,7 +30,7 @@ namespace CartService.Controllers
 
             var sessionId = ControllerContext.HttpContext.Session.Id;
 
-            return new string[] { "value1", "value2" };
+            return new Task<IActionResult>(() => Ok());
         }
 
         // GET: api/Cart/5
