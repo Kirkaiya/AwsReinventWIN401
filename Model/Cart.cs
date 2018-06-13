@@ -10,5 +10,7 @@ namespace CartService.Model
         {
             Items = new List<CartItem>();
         }
+
+        public void Add(CartItem item) => Items.Add(item);
     }
 }

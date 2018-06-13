@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using CartService.Model;
 using CartService.Session;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.DynamoDb;
+using Newtonsoft.Json;
 
 namespace CartService.Controllers
 {
@@ -15,8 +18,13 @@ namespace CartService.Controllers
     public class CartController : Controller
     {
         private const string CartKey = "Cart";
-        //private IAmazonDynamoDB _ddbClient;
+        private readonly IAmazonDynamoDB _ddbClient;
         private Cart _cart;
+
+        public CartController(IAmazonDynamoDB dynamoDB)
+        {
+            _ddbClient = dynamoDB;
+        }
 
         private void LoadCart()
         {
@@ -45,32 +53,56 @@ namespace CartService.Controllers
             if (!string.IsNullOrWhiteSpace(HttpContext.Session.Id))
             {
                 //TEMP test code - remove later!!
-                _cart.Items.Add(new CartItem
+                if (!_cart.Items.Any())
                 {
-                    ProductId = Guid.Parse("dfc55ec1-2f35-4d11-9543-a52622ef00d5"),
-                    Quantity = 2,
-                    PriceWhenAdded = 23.99M,
-                    DateAdded = DateTime.Now
-                });
-                _cart.Items.Add(new CartItem
-                {
-                    ProductId = Guid.Parse("a65bddcf-14b9-4990-a15e-6a9afa9679c6"),
-                    Quantity = 1,
-                    PriceWhenAdded = 19.95M,
-                    DateAdded = DateTime.Now
-                });
+                    _cart.Items.Add(new CartItem
+                    {
+                        ProductId = Guid.Parse("dfc55ec1-2f35-4d11-9543-a52622ef00d5"),
+                        Quantity = 2,
+                        PriceWhenAdded = 23.99M,
+                        DateAdded = DateTime.Now
+                    });
+                    _cart.Items.Add(new CartItem
+                    {
+                        ProductId = Guid.Parse("a65bddcf-14b9-4990-a15e-6a9afa9679c6"),
+                        Quantity = 1,
+                        PriceWhenAdded = 19.95M,
+                        DateAdded = DateTime.Now
+                    });
 
+                    HttpContext.Session.SetObject(CartKey, _cart);
+                }
+                
                 return Ok(_cart);
             }
 
-            return BadRequest("NoSessionStateLoaded");
+            return BadRequest("NoSessionIdForCurrentRequest");
         }
 
         // GET: api/Cart/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(string id)
         {
-            return "value";
+            if (!Guid.TryParse(id, out Guid SessionId))
+            {
+                return BadRequest("InvalidIdIsNotGuid");
+            }
+
+            var options = new DynamoDbCacheOptions { TableName = "TechSummitSessionState", TtlAttribute = "TTL" };
+            var cache = new DynamoDbCache(options, _ddbClient);
+            var sessionBytes = await cache.GetAsync(id);
+            
+            if (sessionBytes == null)
+            {
+                return Ok(new Cart());
+            }
+
+            var sessionString = System.Text.Encoding.UTF8.GetString(sessionBytes);
+            sessionString = sessionString.Substring(sessionString.IndexOf("{\"Items\":"));
+
+            var cart = JsonConvert.DeserializeObject<Cart>(sessionString);
+
+            return Ok(cart);
         }
         
         // POST: api/Cart
@@ -80,7 +112,7 @@ namespace CartService.Controllers
             LoadCart();
 
             item.DateAdded = DateTime.Now;
-            _cart.Items.Add(item);
+            _cart.Add(item);
 
             HttpContext.Session.SetObject(CartKey, _cart);
         }
@@ -91,7 +123,7 @@ namespace CartService.Controllers
         {
             LoadCart();
 
-            if (_cart.Items.First(x => x.ProductId == id) == null)
+            if (!_cart.Items.Any(x => x.ProductId == id))
             {
                 NotFound();
             }
@@ -102,12 +134,15 @@ namespace CartService.Controllers
             existingItem.PriceWhenAdded = item.PriceWhenAdded;
 
             HttpContext.Session.SetObject(CartKey, _cart);
+            Ok();
         }
         
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            HttpContext.Session.Remove(CartKey);
+
         }
     }
 }
