@@ -1,13 +1,15 @@
-﻿using Amazon.DynamoDBv2.DataModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace CartService.Model
 {
-    //DO I Actually need this? Maybe just stuff the shopping cart into the session state bag....
     public class CartItem
     {
+        public Guid ProductId { get; set; }
+
+        public int Quantity { get; set; }
+
+        public DateTime DateAdded { get; set; }
+
+        public decimal PriceWhenAdded { get; set; }
     }
 }

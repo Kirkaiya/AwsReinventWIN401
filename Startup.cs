@@ -7,6 +7,10 @@ using Microsoft.Extensions.Options;
 using CognitoGroupAuthorizer;
 using Microsoft.AspNetCore.Authorization;
 using Amazon.DynamoDBv2;
+using Microsoft.AspNetCore.DataProtection.Repositories;
+using CartService.Session;
+using System;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace CartService
 {
@@ -22,6 +26,18 @@ namespace CartService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IXmlRepository, DdbXmlRepository>();
+
+            services.AddDistributedDynamoDbCache(o => {
+                o.TableName = "TechSummitSessionState";
+                o.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+
+            services.AddSession(o => {
+                o.IdleTimeout = TimeSpan.FromMinutes(30);
+                o.Cookie.HttpOnly = false;
+            });
+
             // Add cognito group authorization requirements for SiteAdmin and LoggedInUser
             services.AddAuthorization(
                 options =>
@@ -36,12 +52,21 @@ namespace CartService
 
             services.AddMvc();
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
+
+            //add DynamoDB to DI
             services.AddAWSService<IAmazonDynamoDB>();
+
+            //Explicitly set the DataProtection middleware to store cookie encryption keys in DynamoDB
+            var sp = services.BuildServiceProvider();
+            services.AddDataProtection()
+                .AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseSession();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
