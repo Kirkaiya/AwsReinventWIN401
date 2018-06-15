@@ -26,6 +26,13 @@ namespace CartService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", builder => {
+                    builder.AllowAnyOrigin();
+                });
+            });
+
             services.AddSingleton<IXmlRepository, DdbXmlRepository>();
 
             services.AddDistributedDynamoDbCache(o => {
@@ -72,6 +79,7 @@ namespace CartService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowAllOrigins");
             app.UseMvc();
         }
     }

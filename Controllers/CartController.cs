@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using CartService.Model;
 using CartService.Session;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.DynamoDb;
@@ -15,6 +14,7 @@ namespace CartService.Controllers
 {
     [Produces("application/json")]
     [Route("api/Cart")]
+    [EnableCors("AllowAllOrigins")]
     public class CartController : Controller
     {
         private const string CartKey = "Cart";
@@ -41,6 +41,14 @@ namespace CartService.Controllers
             }
         }
 
+        // GET: api/cart/health
+        [HttpGet]
+        [Route("/api/cart/health")]
+        public IActionResult Health()
+        {
+            return Ok();
+        }
+        
         // The Get method that doesn't take any parameters reads cart from session state, and will
         //  return an error if no session exists. Order service will call the next method (/Cart/session-id)
         // GET: api/Cart
