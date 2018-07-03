@@ -46,13 +46,7 @@ namespace Microsoft.Extensions.Caching.DynamoDb
 
         public byte[] Get(string key)
         {
-            var value = _table.GetItemAsync(key).Result;
-            if (value == null || value["Session"] == null)
-            {
-                return null;
-            }
-
-            return value["Session"].AsByteArray();
+            return GetAsync(key).Result;
         }
 
         public async Task<byte[]> GetAsync(string key, CancellationToken token = default(CancellationToken))

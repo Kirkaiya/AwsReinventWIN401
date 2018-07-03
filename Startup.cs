@@ -33,7 +33,7 @@ namespace CartService
                 });
             });
 
-            services.AddSingleton<IXmlRepository, DdbXmlRepository>();
+            services.AddSingleton<IXmlRepository, PsXmlRepository>();
 
             services.AddDistributedDynamoDbCache(o => {
                 o.TableName = "TechSummitSessionState";
@@ -50,7 +50,7 @@ namespace CartService
                 options =>
                 {
                     options.AddPolicy("InSiteAdminGroup", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("SiteAdmin")));
-                    options.AddPolicy("InLoggedInUserGroup", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("LoggedInUser")));
+                    options.AddPolicy("InRegisteredUserGroup", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("RegisteredUser")));
                 }
             );
 

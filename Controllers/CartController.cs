@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using CartService.Model;
 using CartService.Session;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +58,6 @@ namespace CartService.Controllers
         {
             LoadCart();
 
-            //return new Task<IActionResult>(() => RedirectToPage("/"));
             if (!string.IsNullOrWhiteSpace(HttpContext.Session.Id))
             {
                 //TEMP test code - remove later!!
@@ -89,6 +89,7 @@ namespace CartService.Controllers
 
         // GET: api/Cart/5
         [HttpGet("{id}", Name = "Get")]
+        [Authorize("IsRegisteredUser")]
         public async Task<IActionResult> Get(string id)
         {
             if (!Guid.TryParse(id, out Guid SessionId))
