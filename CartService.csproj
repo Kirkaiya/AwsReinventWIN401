@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.9" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
+    <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.3.24.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />

@@ -7,16 +7,10 @@ namespace CognitoGroupAuthorizer
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CognitoGroupAuthorizationRequirement requirement)
         {
-            if (!context.User.HasClaim(c => c.Type == "cognito:groups"))
+            if (context.User.HasClaim(c => c.Type == "cognito:groups" &&
+                                           c.Value == requirement.CognitoGroup))
             {
-                context.Fail();
-                return Task.CompletedTask;
-            }
 
-            var group = context.User.FindFirst(c => c.Type == "cognito:groups").Value;
-
-            if (group == requirement.CognitoGroup)
-            {
                 context.Succeed(requirement);
             }
             else

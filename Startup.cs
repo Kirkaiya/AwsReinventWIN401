@@ -2,15 +2,13 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using CognitoGroupAuthorizer;
 using Microsoft.AspNetCore.Authorization;
 using Amazon.DynamoDBv2;
 using Microsoft.AspNetCore.DataProtection.Repositories;
-using CartService.Session;
 using System;
 using Microsoft.AspNetCore.DataProtection;
+using Website.Session;
 
 namespace CartService
 {
