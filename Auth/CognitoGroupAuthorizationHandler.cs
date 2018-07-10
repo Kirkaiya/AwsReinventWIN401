@@ -10,7 +10,6 @@ namespace CognitoGroupAuthorizer
             if (context.User.HasClaim(c => c.Type == "cognito:groups" &&
                                            c.Value == requirement.CognitoGroup))
             {
-
                 context.Succeed(requirement);
             }
             else

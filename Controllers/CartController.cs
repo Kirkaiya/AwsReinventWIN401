@@ -151,7 +151,6 @@ namespace CartService.Controllers
         public void Delete(int id)
         {
             HttpContext.Session.Remove(CartKey);
-
         }
     }
 }

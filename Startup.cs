@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using System;
 using Microsoft.AspNetCore.DataProtection;
 using Website.Session;
+using Amazon.SimpleSystemsManagement;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CartService
 {
@@ -43,14 +45,23 @@ namespace CartService
                 o.Cookie.HttpOnly = false;
             });
 
-            // Add cognito group authorization requirements for SiteAdmin and LoggedInUser
+            // Add cognito group authorization requirements for SiteAdmin and RegisteredUser
             services.AddAuthorization(
                 options =>
                 {
-                    options.AddPolicy("InSiteAdminGroup", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("SiteAdmin")));
-                    options.AddPolicy("InRegisteredUserGroup", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("RegisteredUser")));
+                    options.AddPolicy("IsSiteAdmin", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("SiteAdmin")));
+                    options.AddPolicy("IsRegisteredUser", policy => policy.Requirements.Add(new CognitoGroupAuthorizationRequirement("RegisteredUser")));
                 }
             );
+
+            services.AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Audience = "288seubnkumcdnj3odpftsvbjl";
+                    options.Authority = "https://cognito-idp.us-west-2.amazonaws.com/us-west-2_megh2msxd";
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                });
 
             // Add a single instance (singleton) of the cognito authorization handler
             services.AddSingleton<IAuthorizationHandler, CognitoGroupAuthorizationHandler>();
@@ -58,8 +69,9 @@ namespace CartService
             services.AddMvc();
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
 
-            //add DynamoDB to DI
+            //add DynamoDB and SSM to DI
             services.AddAWSService<IAmazonDynamoDB>();
+            services.AddAWSService<IAmazonSimpleSystemsManagement>();
 
             //Explicitly set the DataProtection middleware to store cookie encryption keys in DynamoDB
             var sp = services.BuildServiceProvider();
