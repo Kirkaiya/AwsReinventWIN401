@@ -6,6 +6,8 @@ namespace CartService.Model
     {
         public Guid ProductId { get; set; }
 
+        public string Name { get; set; }
+
         public int Quantity { get; set; }
 
         public DateTime DateAdded { get; set; }

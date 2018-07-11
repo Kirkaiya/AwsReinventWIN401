@@ -66,6 +66,7 @@ namespace CartService.Controllers
                     _cart.Items.Add(new CartItem
                     {
                         ProductId = Guid.Parse("dfc55ec1-2f35-4d11-9543-a52622ef00d5"),
+                        Name = ".NET Bot Black Hoodie",
                         Quantity = 2,
                         PriceWhenAdded = 23.99M,
                         DateAdded = DateTime.Now
@@ -73,6 +74,7 @@ namespace CartService.Controllers
                     _cart.Items.Add(new CartItem
                     {
                         ProductId = Guid.Parse("a65bddcf-14b9-4990-a15e-6a9afa9679c6"),
+                        Name = ".NET Black & White Mug",
                         Quantity = 1,
                         PriceWhenAdded = 19.95M,
                         DateAdded = DateTime.Now
