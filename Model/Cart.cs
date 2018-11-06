@@ -1,16 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CartService.Model
 {
     public class Cart
     {
-        public IList<CartItem> Items { get; set; }
+        public IDictionary<Guid, CartItem> Items { get; set; }
 
         public Cart()
         {
-            Items = new List<CartItem>();
+            Items = new Dictionary<Guid, CartItem>();
         }
 
-        public void Add(CartItem item) => Items.Add(item);
+        public IEnumerable<CartItem> ItemsCollection() => Items.Values;
+
+        public void Add(CartItem item) => Items.Add(item.ProductId, item);
+
+        public void Remove(Guid ProductId) => Items.Remove(ProductId);
+
+        public bool Contains(Guid ProductId) => Items.ContainsKey(ProductId);
     }
 }
