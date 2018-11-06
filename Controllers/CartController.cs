@@ -91,7 +91,7 @@ namespace CartService.Controllers
 
         // GET: api/Cart/5
         [HttpGet("{id}", Name = "Get")]
-        [Authorize("IsRegisteredUser")]
+        //[Authorize("IsRegisteredUser")]
         public async Task<IActionResult> Get(string id)
         {
             if (!Guid.TryParse(id, out Guid SessionId))
@@ -118,7 +118,7 @@ namespace CartService.Controllers
         
         // POST: api/Cart
         [HttpPost]
-        public void Post([FromBody]CartItem item)
+        public Guid Post([FromBody]CartItem item)
         {
             LoadCart();
 
@@ -126,6 +126,8 @@ namespace CartService.Controllers
             _cart.Add(item);
 
             HttpContext.Session.SetObject(CartKey, _cart);
+
+            return item.ProductId;
         }
         
         // PUT: api/Cart/5
@@ -152,6 +154,8 @@ namespace CartService.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            LoadCart();
+
             HttpContext.Session.Remove(CartKey);
         }
     }

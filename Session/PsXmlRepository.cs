@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Website.Session
+namespace CartService.Session
 {
     public class PsXmlRepository : IXmlRepository
     {

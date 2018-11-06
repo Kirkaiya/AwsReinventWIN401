@@ -8,8 +8,7 @@ using Amazon.DynamoDBv2;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using System;
 using Microsoft.AspNetCore.DataProtection;
-using Website.Session;
-using Amazon.SimpleSystemsManagement;
+using CartService.Session;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CartService
@@ -32,19 +31,7 @@ namespace CartService
                     builder.AllowAnyOrigin();
                 });
             });
-
-            services.AddSingleton<IXmlRepository, PsXmlRepository>();
-
-            services.AddDistributedDynamoDbCache(o => {
-                o.TableName = "TechSummitSessionState";
-                o.IdleTimeout = TimeSpan.FromMinutes(30);
-            });
-
-            services.AddSession(o => {
-                o.IdleTimeout = TimeSpan.FromMinutes(30);
-                o.Cookie.HttpOnly = false;
-            });
-
+            
             // Add cognito group authorization requirements for SiteAdmin and RegisteredUser
             services.AddAuthorization(
                 options =>
@@ -54,24 +41,36 @@ namespace CartService
                 }
             );
 
+            services.AddSingleton<IXmlRepository, DdbXmlRepository>();
+
+            services.AddDistributedDynamoDbCache(o => {
+                o.TableName = "TechSummitSessionState";
+                o.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+
+            services.AddSession(o => {
+                o.IdleTimeout = TimeSpan.FromMinutes(30);
+                o.Cookie.HttpOnly = true;
+            });
+
             services.AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.Audience = "288seubnkumcdnj3odpftsvbjl";
                     options.Authority = "https://cognito-idp.us-west-2.amazonaws.com/us-west-2_megh2msxd";
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = false;   //set this to true for prod environments!
                     options.SaveToken = true;
                 });
 
             // Add a single instance (singleton) of the cognito authorization handler
             services.AddSingleton<IAuthorizationHandler, CognitoGroupAuthorizationHandler>();
 
-            services.AddMvc();
-            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
-
             //add DynamoDB and SSM to DI
             services.AddAWSService<IAmazonDynamoDB>();
-            services.AddAWSService<IAmazonSimpleSystemsManagement>();
+            //services.AddAWSService<IAmazonSimpleSystemsManagement>(); // only required if using ParameterStore to store keys (PsXmlRepository)
+
+            services.AddMvc();
+            services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
 
             //Explicitly set the DataProtection middleware to store cookie encryption keys in DynamoDB
             var sp = services.BuildServiceProvider();
