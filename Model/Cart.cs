@@ -14,7 +14,13 @@ namespace CartService.Model
 
         public IEnumerable<CartItem> ItemsCollection() => Items.Values;
 
-        public void Add(CartItem item) => Items.Add(item.ProductId, item);
+        public void Add(CartItem item)
+        {
+            if (Items.ContainsKey(item.ProductId))
+                Items[item.ProductId] = item;
+            else
+                Items.Add(item.ProductId, item);
+        }
 
         public void Remove(Guid ProductId) => Items.Remove(ProductId);
 

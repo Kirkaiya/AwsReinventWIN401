@@ -29,6 +29,8 @@ namespace CartService
             {
                 options.AddPolicy("AllowAllOrigins", builder => {
                     builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader();
+                    builder.AllowAnyMethod();
                 });
             });
             
@@ -74,8 +76,7 @@ namespace CartService
 
             //Explicitly set the DataProtection middleware to store cookie encryption keys in DynamoDB
             var sp = services.BuildServiceProvider();
-            services.AddDataProtection()
-                .AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());
+            services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

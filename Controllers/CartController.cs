@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
 using CartService.Model;
 using CartService.Session;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.DynamoDb;
 using Newtonsoft.Json;
+using ProductService.Model;
 
 namespace CartService.Controllers
 {
@@ -20,6 +19,7 @@ namespace CartService.Controllers
     {
         private const string CartKey = "Cart";
         private Cart _cart;
+        private bool _dev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
         private void LoadCart()
         {
@@ -51,16 +51,24 @@ namespace CartService.Controllers
 
         // POST: api/Cart
         [HttpPost]
-        public Guid Post([FromBody]CartItem item)
+        public async Task<IActionResult> Post([FromBody]CartItem item)
         {
             LoadCart();
 
             item.DateAdded = DateTime.Now;
+
+            //check if quantity is available
+            var product = await GetProductFromProductServiceAsync(item.ProductId);
+            if (product != null && item.Quantity > product.AvailableStock)
+            {
+                return BadRequest($"Insuffient quantity in stock: {product.AvailableStock} in stock, attempted to add {item.Quantity}");
+            }
+
             _cart.Add(item);
 
             HttpContext.Session.SetObject(CartKey, _cart);
 
-            return item.ProductId;
+            return Ok(item.ProductId);
         }
 
         // PUT: api/Cart/01234-5678-9abcd-efg
@@ -105,6 +113,29 @@ namespace CartService.Controllers
         public IActionResult Health()
         {
             return Ok();
+        }
+
+        private async Task<Product> GetProductFromProductServiceAsync(Guid productId)
+        {
+            if (_dev) return null;  //for running locally
+
+            var http = new HttpClient
+            {
+                BaseAddress = new Uri("http://product.techsummit/api/")
+            };
+
+            try
+            {
+                var prodString =  await http.GetStringAsync("products");
+                var product = JsonConvert.DeserializeObject<Product>(prodString);
+
+                return product;
+            }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
         private void AddDummyCartItems()
