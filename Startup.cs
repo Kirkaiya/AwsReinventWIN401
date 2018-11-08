@@ -31,6 +31,7 @@ namespace CartService
                     builder.AllowAnyOrigin();
                     builder.AllowAnyHeader();
                     builder.AllowAnyMethod();
+                    builder.AllowCredentials();
                 });
             });
             
