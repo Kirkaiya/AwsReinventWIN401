@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWS.Logger.AspNetCore" Version="1.3.0" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.9" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
     <PackageReference Include="AWSSDK.SimpleSystemsManagement" Version="3.3.24.1" />
