@@ -54,7 +54,6 @@ namespace CartService
             services.AddSession(o => {
                 o.IdleTimeout = TimeSpan.FromMinutes(30);
                 o.Cookie.HttpOnly = true;
-                o.Cookie.Domain = ".awstechsummit.com";
             });
 
             services.AddAuthentication(options => options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme)
