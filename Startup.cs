@@ -10,6 +10,7 @@ using System;
 using Microsoft.AspNetCore.DataProtection;
 using CartService.Session;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Logging;
 
 namespace CartService
 {
@@ -81,8 +82,9 @@ namespace CartService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
             app.UseSession();
 
             if (env.IsDevelopment())
@@ -90,6 +92,7 @@ namespace CartService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseAuthentication();
             app.UseCors("AllowAllOrigins");
             app.UseMvc();
         }

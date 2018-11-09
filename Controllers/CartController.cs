@@ -7,6 +7,7 @@ using CartService.Session;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProductService.Model;
 
@@ -17,9 +18,15 @@ namespace CartService.Controllers
     [EnableCors("AllowAllOrigins")]
     public class CartController : Controller
     {
-        private const string CartKey = "Cart";
-        private Cart _cart;
-        private bool _dev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+        Cart _cart;
+        const string CartKey = "Cart";
+        bool _dev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+        readonly ILogger<CartController> _logger;
+
+        public CartController(ILogger<CartController> logger)
+        {
+            _logger = logger;
+        }
 
         private void LoadCart()
         {
@@ -118,15 +125,16 @@ namespace CartService.Controllers
         private async Task<Product> GetProductFromProductServiceAsync(Guid productId)
         {
             if (_dev) return null;  //for running locally
+            _logger.LogInformation("Checking product service for productId {0}", productId);
 
             var http = new HttpClient
             {
-                BaseAddress = new Uri("http://product.techsummit/api/")
+                BaseAddress = new Uri("http://product.techsummit")
             };
 
             try
             {
-                var prodString =  await http.GetStringAsync("products");
+                var prodString =  await http.GetStringAsync($"/api/products/{productId}");
                 var product = JsonConvert.DeserializeObject<Product>(prodString);
 
                 return product;
