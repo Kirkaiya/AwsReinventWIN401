@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ProductService.Model;
+using Amazon.XRay.Recorder.Handlers.System.Net;
 
 namespace CartService.Controllers
 {
@@ -127,7 +128,7 @@ namespace CartService.Controllers
             if (_dev) return null;  //for running locally
             _logger.LogInformation("Checking product service for productId {0}", productId);
 
-            var http = new HttpClient
+            var http = new HttpClient(new HttpClientXRayTracingHandler(new HttpClientHandler()))
             {
                 BaseAddress = new Uri("http://product.techsummit")
             };

@@ -20,7 +20,7 @@ phases:
       - 'docker push $REPOSITORY_URI:$IMAGE_TAG'
       - echo Writing image definitions file...
       - >-
-        printf '[{"name":"%s","imageUri":"%s"}]'
+        printf '[{"name":"%s","imageUri":"%s"},{"name":"xray-daemon","imageUri":"544123295116.dkr.ecr.us-west-2.amazonaws.com/xray-daemon"}]'
         $CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > image.json
 artifacts:
   files:
