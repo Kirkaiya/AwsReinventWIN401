@@ -92,6 +92,7 @@ namespace CartService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseXRay("CartService");
             app.UseAuthentication();
             app.UseCors("AllowAllOrigins");
             app.UseMvc();
