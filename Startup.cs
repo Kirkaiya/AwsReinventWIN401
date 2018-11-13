@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.DataProtection;
 using CartService.Session;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
+using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 
 namespace CartService
@@ -70,8 +71,9 @@ namespace CartService
             // Add a single instance (singleton) of the cognito authorization handler
             services.AddSingleton<IAuthorizationHandler, CognitoGroupAuthorizationHandler>();
 
-            //register all AWS service calls to be traced by X-Ray
-            //AWSSDKHandler.RegisterXRayForAllServices(); //not yet working
+            //configure XRay, and register all AWS service calls to be traced
+            AWSXRayRecorder.InitializeInstance(Configuration); // pass IConfiguration object that reads appsettings.json file
+            AWSSDKHandler.RegisterXRayForAllServices(); //not yet working
 
             //add DynamoDB and SSM to DI
             services.AddAWSService<IAmazonDynamoDB>();
@@ -96,6 +98,7 @@ namespace CartService
                 app.UseDeveloperExceptionPage();
             }
 
+            AWSXRayRecorder.InitializeInstance(Configuration);
             app.UseXRay("CartService");
             app.UseAuthentication();
             app.UseCors("AllowAllOrigins");

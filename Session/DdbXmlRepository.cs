@@ -1,5 +1,6 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.XRay.Recorder.Core;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace CartService.Session
         public DdbXmlRepository(IAmazonDynamoDB dynamoDb)
         {
             _dynamoDb = dynamoDb;
+            AWSXRayRecorder.Instance.BeginSegment("CartService");
         }
 
         public IReadOnlyCollection<XElement> GetAllElements()
