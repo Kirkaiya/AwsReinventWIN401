@@ -137,11 +137,14 @@ namespace CartService.Controllers
                 var prodString =  await http.GetStringAsync($"/api/products/{productId}");
                 var product = JsonConvert.DeserializeObject<Product>(prodString);
 
+                _logger.LogInformation("Success fetching productId {0} from product service", productId);
+
                 return product;
             }
             catch (HttpRequestException ex)
             {
                 Console.WriteLine(ex.Message);
+                _logger.LogError(ex, "Exception fetching productId {0} from product service", productId);
                 return null;
             }
         }
