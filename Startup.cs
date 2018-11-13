@@ -71,7 +71,7 @@ namespace CartService
             services.AddSingleton<IAuthorizationHandler, CognitoGroupAuthorizationHandler>();
 
             //register all AWS service calls to be traced by X-Ray
-            AWSSDKHandler.RegisterXRayForAllServices();
+            //AWSSDKHandler.RegisterXRayForAllServices(); //not yet working
 
             //add DynamoDB and SSM to DI
             services.AddAWSService<IAmazonDynamoDB>();
