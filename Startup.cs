@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Logging;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace CartService
 {
@@ -73,7 +74,7 @@ namespace CartService
 
             //configure XRay, and register all AWS service calls to be traced
             AWSXRayRecorder.InitializeInstance(Configuration); // pass IConfiguration object that reads appsettings.json file
-            AWSSDKHandler.RegisterXRayForAllServices(); //not yet working
+            AWSSDKHandler.RegisterXRayForAllServices();
 
             //add DynamoDB and SSM to DI
             services.AddAWSService<IAmazonDynamoDB>();
@@ -85,6 +86,12 @@ namespace CartService
             //Explicitly set the DataProtection middleware to store cookie encryption keys in DynamoDB
             var sp = services.BuildServiceProvider();
             services.AddDataProtection().AddKeyManagementOptions(o => o.XmlRepository = sp.GetService<IXmlRepository>());
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("docs", new Info { Title = "re:Invent WIN401 Cart API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,6 +104,14 @@ namespace CartService
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //Enable middleware to serve generated Swagger as a JSON endpoint, and generate swagger-ui (HTML, etc)
+            app.UseSwagger(x => x.RouteTemplate = "api/cart/{documentName}/swagger.json");
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/api/cart/docs/swagger.json", "re:Invent WIN401 Cart API");
+                c.RoutePrefix = "api/cart/swagger";
+            });
 
             AWSXRayRecorder.InitializeInstance(Configuration);
             app.UseXRay("CartService");
