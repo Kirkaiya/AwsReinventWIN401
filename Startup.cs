@@ -105,6 +105,9 @@ namespace CartService
                 app.UseDeveloperExceptionPage();
             }
 
+            AWSXRayRecorder.InitializeInstance(Configuration);
+            app.UseXRay("CartService");
+
             //Enable middleware to serve generated Swagger as a JSON endpoint, and generate swagger-ui (HTML, etc)
             app.UseSwagger(x => x.RouteTemplate = "api/cart/{documentName}/swagger.json");
             app.UseSwaggerUI(c =>
@@ -113,8 +116,6 @@ namespace CartService
                 c.RoutePrefix = "api/cart/swagger";
             });
 
-            AWSXRayRecorder.InitializeInstance(Configuration);
-            app.UseXRay("CartService");
             app.UseAuthentication();
             app.UseCors("AllowAllOrigins");
             app.UseMvc();
