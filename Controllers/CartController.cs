@@ -69,7 +69,7 @@ namespace CartService.Controllers
             var product = await GetProductFromProductServiceAsync(item.ProductId);
             if (product != null && item.Quantity > product.AvailableStock)
             {
-                return BadRequest($"Insuffient quantity in stock: {product.AvailableStock} in stock, attempted to add {item.Quantity}");
+                return BadRequest($"Insufficient quantity in stock: {product.AvailableStock} in stock, attempted to add {item.Quantity}");
             }
 
             if (product != null)
