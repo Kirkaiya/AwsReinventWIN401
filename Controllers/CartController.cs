@@ -72,6 +72,9 @@ namespace CartService.Controllers
                 return BadRequest($"Insuffient quantity in stock: {product.AvailableStock} in stock, attempted to add {item.Quantity}");
             }
 
+            if (product != null)
+                item.PriceWhenAdded = product.Price;
+
             _cart.Add(item);
 
             HttpContext.Session.SetObject(CartKey, _cart);

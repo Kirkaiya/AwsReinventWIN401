@@ -1,5 +1,6 @@
 ﻿using Amazon.SimpleSystemsManagement;
 using Amazon.SimpleSystemsManagement.Model;
+using Amazon.XRay.Recorder.Core;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using System.Collections.Generic;
 using System.Xml.Linq;
@@ -13,6 +14,7 @@ namespace CartService.Session
         public PsXmlRepository(IAmazonSimpleSystemsManagement client)
         {
             _client = client;
+            AWSXRayRecorder.Instance.BeginSegment("CartService");
         }
 
         public IReadOnlyCollection<XElement> GetAllElements()
