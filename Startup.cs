@@ -98,12 +98,14 @@ namespace CartService
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddAWSProvider(Configuration.GetAWSLoggingConfigSection());
-            app.UseSession();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSession();
+
 
             //Enable middleware to serve generated Swagger as a JSON endpoint, and generate swagger-ui (HTML, etc)
             app.UseSwagger(x => x.RouteTemplate = "api/cart/{documentName}/swagger.json");
@@ -115,6 +117,7 @@ namespace CartService
 
             AWSXRayRecorder.InitializeInstance(Configuration);
             app.UseXRay("CartService");
+            app.MergeAuthorizationHeaderWithSession();
             app.UseAuthentication();
             app.UseCors("AllowAllOrigins");
             app.UseMvc();

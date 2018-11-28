@@ -31,6 +31,7 @@ namespace CartService.Controllers
 
         private void LoadCart()
         {
+            //TODO If user is authenticated, load cart from DynamoDb instead
             HttpContext.Session.LoadAsync().Wait();
 
             if (HttpContext.Session.IsAvailable && HttpContext.Session.Keys.Contains(CartKey))
@@ -40,8 +41,14 @@ namespace CartService.Controllers
             else
             {
                 _cart = new Cart();
-                HttpContext.Session.SetObject(CartKey, _cart);
+                SaveCart();
             }
+        }
+
+        private void SaveCart()
+        {
+            //TODO If user is authenticated, save cart to DynamoDb instead
+            HttpContext.Session.SetObject(CartKey, _cart);
         }
         
         // GET: api/Cart
@@ -50,7 +57,7 @@ namespace CartService.Controllers
         {
             LoadCart();
 
-            //TEMP test code - remove later!!
+            // This is just for demonstration purposes - remove this and AddDummyCartItems method for any real-world use
             if (!_cart.Items.Any())
                 AddDummyCartItems();
 
@@ -77,7 +84,7 @@ namespace CartService.Controllers
 
             _cart.Add(item);
 
-            HttpContext.Session.SetObject(CartKey, _cart);
+            SaveCart();
 
             return Ok(item.ProductId);
         }
@@ -98,7 +105,7 @@ namespace CartService.Controllers
 
             existingItem.Quantity = item.Quantity;
             existingItem.PriceWhenAdded = item.PriceWhenAdded;
-            HttpContext.Session.SetObject(CartKey, _cart);
+            SaveCart();
 
             return Ok();
         }
@@ -113,7 +120,7 @@ namespace CartService.Controllers
                 return NotFound();
 
             _cart.Remove(id);
-            HttpContext.Session.SetObject(CartKey, _cart);
+            SaveCart();
 
             return Ok();
         }
@@ -174,7 +181,7 @@ namespace CartService.Controllers
                 DateAdded = DateTime.Now
             });
 
-            HttpContext.Session.SetObject(CartKey, _cart);
+            SaveCart();
         }
     }
 }
