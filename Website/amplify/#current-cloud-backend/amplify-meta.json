@@ -1,0 +1,32 @@
+{
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "ebsite-20181107160403-authRole",
+			"UnauthRoleArn": "arn:aws:iam::544123295116:role/ebsite-20181107160403-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::544123295116:role/ebsite-20181107160403-authRole",
+			"Region": "us-west-2",
+			"DeploymentBucketName": "ebsite-20181107160403-deployment",
+			"UnauthRoleName": "ebsite-20181107160403-unauthRole",
+			"StackName": "ebsite-20181107160403",
+			"StackId": "arn:aws:cloudformation:us-west-2:544123295116:stack/ebsite-20181107160403/cdc9c550-e2e9-11e8-9a1b-02cb67b6aa16"
+		}
+	},
+	"hosting": {
+		"S3AndCloudFront": {
+			"service": "S3AndCloudFront",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ebsite-20181107160403-deployment/amplify-cfn-templates/hosting/template.json",
+				"logicalId": "hostingS3AndCloudFront"
+			},
+			"lastPushTimeStamp": "2018-11-08T00:06:50.339Z",
+			"output": {
+				"S3BucketSecureURL": "https://www.awstechsummit.net.s3.amazonaws.com",
+				"WebsiteURL": "http://www.awstechsummit.net.s3-website-us-west-2.amazonaws.com",
+				"Region": "us-west-2",
+				"HostingBucketName": "www.awstechsummit.net"
+			},
+			"lastPushDirHash": "wsccIZVGJQlft8V8kEplckAXjDQ="
+		}
+	}
+}

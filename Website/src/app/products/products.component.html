@@ -1,0 +1,21 @@
+<div class="product-gallery container">
+  <div class="row">
+    <div class="col-md-3" *ngFor="let product of products">
+          <div class="product-item">
+            <button type="button" *ngIf="!notLoggedIn && isAdmin" class="btn btn-danger float-right trashIcon" (click)="deleteProduct(product.productId)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+            <fa-icon [icon]="faTshirt" class="productIcon" size="5x"></fa-icon>
+            <div class="item-info">
+              <a href="#0">{{product.name}}</a>
+              <p class="productDescription">{{product.description}}</p>
+              <p class="productPrice">{{displayPrice(product.price)}}</p>
+            </div> <!-- cd-item-info -->
+            <button class="btn btn-primary btn-block" (click)="addItemToCart(product)">Add to Cart</button>
+        </div>
+      </div>
+      <div class="col-md-3" *ngIf="!notLoggedIn && isAdmin">
+        <div class="product-item plusBox">
+        <a class="btn plusBtn" (click)="addProduct()"><fa-icon [icon]="faAdd" size="5x" class="plusIcon"></fa-icon></a>
+        </div>
+      </div>
+  </div> 
+</div>

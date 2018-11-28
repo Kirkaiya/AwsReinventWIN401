@@ -1,0 +1,13 @@
+.productName {
+    font-weight: bold;
+}
+.cartText {
+    font-size: 11px;
+}
+
+.cartItem {
+    padding-bottom: 10px;
+}
+.cartTrash {
+    margin-left: -10px;
+}

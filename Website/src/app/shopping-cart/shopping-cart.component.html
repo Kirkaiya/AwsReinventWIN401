@@ -1,0 +1,28 @@
+
+<ng-template #popContent>
+  <div class="container">
+  <div *ngFor="let item of cartItems">
+    <div class="row cartItem">
+      <div class="col-sm-6">
+          <div class="productName">{{item.name}}</div>
+          <div class="cartText">Price: ${{item.priceWhenAdded}}</div>
+          <div class="cartText">Quantity: {{item.quantity}}</div>
+      </div>
+      <div class="col-sm-4">
+        <div class="productName">${{item.priceWhenAdded}}</div>
+      </div>
+      <div class="col-sm-2">
+          <button class="btn btn-danger cartTrash" (click)="removeFromCart(item.productId)"><fa-icon [icon]="faTrash" size="1x"></fa-icon></button>
+      </div>
+    </div>
+  </div>
+</div>
+</ng-template>
+<ng-template #popTitle>Shopping Cart</ng-template>
+
+<button
+  type="button" class="btn mr-4"
+  [ngbPopover]="popContent" [popoverTitle]="popTitle"
+  placement="bottom" triggers="manual" #p1="ngbPopover" (click)="cartClicked(p1)" popoverClass="cartPopover">
+<fa-icon class="shoppingBtn" [icon]="faShoppingCart" size="2x"></fa-icon>
+</button>
