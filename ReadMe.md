@@ -1,3 +1,0 @@
-## CartService project
-
-+ TODO
