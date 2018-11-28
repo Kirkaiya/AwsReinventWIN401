@@ -13,3 +13,5 @@ We'll update this ReadMe more later, but for now, the Visual Studio solution fil
 + We plan to later add a CloudFormation template that will create that infrastructure later, time permitting.
 + The slides we used in our breakout session are in PDF format in the Solution folder.
 
+This is the overall architecture we used (and discussed) in the WIN401 breakout session.
+![Microservices architecture diagram](architecture.png "WIN401 Architecture Diagram")
