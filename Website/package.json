@@ -24,7 +24,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.7",
     "@fortawesome/free-solid-svg-icons": "^5.4.2",
     "@ng-bootstrap/ng-bootstrap": "^4.0.0",
-    "angular": "^1.7.5",
+    "angular": "^1.8.3",
     "aws-amplify": "^1.1.7",
     "aws-amplify-angular": "^2.0.10",
     "bootstrap": "^4.3.1",
